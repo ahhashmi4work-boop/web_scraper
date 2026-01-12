@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Scraper - Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>📧 Email Scraper Results</h1>
+        
+        {% if error %}
+        <div class="error-message">
+            <strong>❌ Error:</strong> {{ error }}
+        </div>
+        {% endif %}
+
+        {% if data %}
+        <div class="info-box">
+            <p><strong>Total Records:</strong> {{ data|length }}</p>
+            <p><strong>Output saved to:</strong> output.csv</p>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        {% for key in data[0].keys() %}
+                        <th>{{ key|title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        {% for key, value in row.items() %}
+                        <td>
+                            {% if key.lower() == 'emails' %}
+                                {% if value and value != 'No emails found' and value != 'Empty URL' %}
+                                    <span class="email-found">{{ value }}</span>
+                                {% else %}
+                                    <span class="email-not-found">{{ value or 'No emails found' }}</span>
+                                {% endif %}
+                            {% elif 'url' in key.lower() %}
+                                <a href="{{ value }}" target="_blank" class="url-link">{{ value }}</a>
+                            {% else %}
+                                {{ value }}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <p>No data to display. Please check your CSV file.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
